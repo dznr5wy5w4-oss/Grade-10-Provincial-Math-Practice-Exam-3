@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NS Math 10 Practice Exam — Version 3</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, serif; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); min-height: 100vh; padding: 20px; color: #2c3e50; }
+  .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; }
+  header { background: linear-gradient(135deg, #2e7d32, #43a047); color: white; padding: 30px; text-align: center; }
+  header h1 { font-size: 28px; margin-bottom: 8px; }
+  .version-badge { display: inline-block; background: rgba(255,255,255,0.25); padding: 4px 14px; border-radius: 20px; font-size: 13px; margin-top: 8px; }
+  .exam-info { background: #f8f9fa; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 2px solid #e9ecef; }
+  #timer { font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; color: #2e7d32; background: white; padding: 5px 12px; border-radius: 6px; border: 2px solid #2e7d32; }
+  .progress-bar { height: 6px; background: #e9ecef; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #43a047, #66bb6a); width: 0%; transition: width 0.4s; }
+  .section-tag { display: inline-block; background: #2e7d32; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
+  .question-area { padding: 35px 40px; min-height: 400px; }
+  .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 25px; }
+  .options { display: grid; gap: 12px; }
+  .option { padding: 15px 20px; border: 2px solid #dee2e6; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 16px; background: white; display: flex; align-items: center; gap: 15px; }
+  .option:hover { border-color: #43a047; background: #f1f8f4; }
+  .option.selected { border-color: #43a047; background: #d7e9d9; font-weight: 600; }
+  .option.correct { border-color: #28a745; background: #d4edda; color: #155724; }
+  .option.incorrect { border-color: #dc3545; background: #f8d7da; color: #721c24; }
+  .option-letter { width: 32px; height: 32px; border-radius: 50%; background: #f1f3f5; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+  .option.selected .option-letter { background: #43a047; color: white; }
+  .option.correct .option-letter { background: #28a745; color: white; }
+  .option.incorrect .option-letter { background: #dc3545; color: white; }
+  .feedback { margin-top: 20px; padding: 18px; border-radius: 8px; }
+  .feedback.correct { background: #d4edda; border-left: 4px solid #28a745; color: #155724; }
+  .feedback.incorrect { background: #fff3cd; border-left: 4px solid #ffc107; color: #856404; }
+  .feedback strong { display: block; margin-bottom: 6px; }
+  .controls { padding: 20px 40px; background: #f8f9fa; display: flex; justify-content: space-between; gap: 15px; border-top: 2px solid #e9ecef; }
+  button { padding: 12px 28px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .btn-primary { background: #43a047; color: white; }
+  .btn-primary:hover:not(:disabled) { background: #2e7d32; transform: translateY(-2px); }
+  .btn-secondary { background: white; color: #43a047; border: 2px solid #43a047; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .start-screen, .results-screen { padding: 50px 40px; text-align: center; }
+  .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 25px 0; }
+  .topic-card { background: #f1f8f4; border: 2px solid #a5d6a7; border-radius: 8px; padding: 12px; font-size: 14px; color: #2e7d32; font-weight: 600; }
+  .score-circle { width: 180px; height: 180px; border-radius: 50%; margin: 20px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: bold; }
+  .score-percent { font-size: 48px; }
+  .breakdown { margin: 30px auto; max-width: 500px; text-align: left; }
+  .breakdown-item { display: flex; justify-content: space-between; padding: 12px 16px; background: #f8f9fa; margin-bottom: 8px; border-radius: 6px; border-left: 4px solid #43a047; }
+  .review-question { background: #f8f9fa; padding: 18px; border-radius: 8px; margin-bottom: 12px; text-align: left; }
+  .review-question.correct-q { border-left: 4px solid #28a745; }
+  .review-question.wrong-q { border-left: 4px solid #dc3545; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📐 Nova Scotia Mathematics 10</h1>
+    <p>Provincial Exam Practice — Mixed Edition</p>
+    <div class="version-badge">VERSION 3 · All Fresh Questions</div>
+  </header>
+
+  <div id="start-screen" class="start-screen">
+    <h2 style="color:#2e7d32;margin-bottom:20px;">Mixed Practice — All New Questions</h2>
+    <p style="line-height:1.7;margin-bottom:15px;">A fresh 30-question exam with completely new problems across all NS Math 10 topics. Includes a higher proportion of multi-step long-answer questions to mimic the real provincial exam.</p>
+    <div class="topics-grid">
+      <div class="topic-card">📏 Measurement</div>
+      <div class="topic-card">📐 Trigonometry</div>
+      <div class="topic-card">√ Roots & Powers</div>
+      <div class="topic-card">✖️ Factors & Products</div>
+      <div class="topic-card">🔗 Relations & Functions</div>
+      <div class="topic-card">📈 Linear Functions</div>
+      <div class="topic-card">⚖️ Systems</div>
+      <div class="topic-card">💰 Finance</div>
+    </div>
+    <p>All-new questions. Builds on what you've already practised. ⏱️ Suggested time: 90 minutes</p>
+    <button class="btn-primary" onclick="startExam()" style="margin-top:25px;padding:15px 40px;font-size:17px;">Begin Exam →</button>
+  </div>
+
+  <div id="exam-info" class="exam-info" style="display:none;">
+    <div><strong>Question:</strong> <span id="q-counter">1 / 30</span></div>
+    <div><strong>Score:</strong> <span id="score-display">0 / 0</span></div>
+    <div id="timer">00:00</div>
+  </div>
+  <div class="progress-bar" id="progress-container" style="display:none;"><div class="progress-fill" id="progress-fill"></div></div>
+  <div id="question-area" class="question-area" style="display:none;"></div>
+  <div id="controls" class="controls" style="display:none;">
+    <button class="btn-secondary" id="prev-btn" onclick="prevQuestion()" disabled>← Previous</button>
+    <button class="btn-primary" id="check-btn" onclick="checkAnswer()">Check Answer</button>
+    <button class="btn-primary" id="next-btn" onclick="nextQuestion()" style="display:none;">Next →</button>
+  </div>
+
+  <div id="results-screen" class="results-screen" style="display:none;">
+    <h2 style="color:#2e7d32;">🎉 Exam Complete!</h2>
+    <div class="score-circle" id="score-circle">
+      <div class="score-percent" id="final-percent">0%</div>
+      <div style="font-size:14px;">Final Score</div>
+    </div>
+    <p id="result-message" style="font-size:18px;margin:20px 0;"></p>
+    <div class="breakdown" id="topic-breakdown"></div>
+    <div style="margin-top:30px;">
+      <button class="btn-primary" onclick="restartExam()">🔄 Retake</button>
+      <button class="btn-secondary" onclick="reviewAnswers()" style="margin-left:10px;">📝 Review Answers</button>
+    </div>
+    <div id="review-section" style="margin-top:30px;display:none;"></div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ===== MEASUREMENT =====
+  { topic:"Measurement", question:"Convert 5 ft 6 in to centimetres. (1 ft = 30.48 cm)", options:["152.4 cm","167.6 cm","175.3 cm","182.9 cm"], correct:1, explanation:"5 ft 6 in = 5.5 ft × 30.48 = 167.64 cm." },
+  { topic:"Measurement", question:"A swimming pool is 25 yards long. Approximately how many metres is that? (1 yd = 0.9144 m)", options:["22.9 m","25.0 m","27.4 m","30.0 m"], correct:0, explanation:"25 × 0.9144 ≈ 22.86 m ≈ 22.9 m." },
+  { topic:"Measurement", question:"A right cone has radius 5 cm and slant height 13 cm. Find its surface area (SA = πr² + πrs).", options:["≈ 204 cm²","≈ 283 cm²","≈ 314 cm²","≈ 471 cm²"], correct:1, explanation:"SA = π(5)² + π(5)(13) = 25π + 65π = 90π ≈ 282.7 cm²." },
+  { topic:"Measurement (Long)", question:"A storage container is a cylinder (r = 1.5 m, h = 4 m). What is its volume in m³?", options:["≈ 14.1 m³","≈ 18.8 m³","≈ 28.3 m³","≈ 37.7 m³"], correct:2, explanation:"V = πr²h = π(1.5)²(4) = 9π ≈ 28.27 m³." },
+
+  // ===== TRIGONOMETRY =====
+  { topic:"Trigonometry", question:"In a right triangle, the side adjacent to angle θ is 8 and the hypotenuse is 17. What is cos θ?", options:["8/15","8/17","15/17","17/8"], correct:1, explanation:"cos θ = adjacent/hypotenuse = 8/17." },
+  { topic:"Trigonometry", question:"A ladder leans against a wall. The base is 3 m from the wall, and the ladder is 5 m long. What angle does it make with the ground?", options:["≈ 37°","≈ 45°","≈ 53°","≈ 60°"], correct:2, explanation:"cos θ = 3/5 = 0.6, so θ = cos⁻¹(0.6) ≈ 53.13°." },
+  { topic:"Trigonometry (Long)", question:"From a point on the ground, the angle of elevation to the top of a tree is 42°. The point is 25 m from the base. How tall is the tree (to nearest tenth)?", options:["16.7 m","18.6 m","22.5 m","27.7 m"], correct:2, explanation:"tan(42°) = h/25, so h = 25·tan(42°) ≈ 25 × 0.9004 ≈ 22.5 m." },
+  { topic:"Trigonometry (Long)", question:"A wheelchair ramp rises 1 m over a horizontal distance of 12 m. What angle does the ramp make with the ground?", options:["≈ 4.8°","≈ 7.5°","≈ 11.3°","≈ 14.0°"], correct:0, explanation:"tan θ = 1/12, so θ = tan⁻¹(1/12) ≈ 4.76°." },
+
+  // ===== ROOTS & POWERS =====
+  { topic:"Roots & Powers", question:"Which number is irrational?", options:["√25","∛27","√10","9/4"], correct:2, explanation:"√25 = 5, ∛27 = 3, 9/4 = 2.25 — all rational. √10 ≈ 3.162... is non-terminating, non-repeating, so irrational." },
+  { topic:"Roots & Powers", question:"Write 5√3 as an entire radical.", options:["√15","√25","√45","√75"], correct:3, explanation:"5√3 = √(25·3) = √75." },
+  { topic:"Roots & Powers", question:"Simplify √72.", options:["6√2","2√18","8√2","12√6"], correct:0, explanation:"√72 = √(36·2) = 6√2." },
+  { topic:"Roots & Powers", question:"Evaluate 16^(3/4).", options:["4","8","12","64"], correct:1, explanation:"16^(3/4) = (⁴√16)³ = 2³ = 8." },
+  { topic:"Roots & Powers", question:"Simplify (x³y²)² ÷ (xy).", options:["x⁵y³","x⁵y⁴","x⁶y⁴/xy","x⁷y⁵"], correct:0, explanation:"(x³y²)² = x⁶y⁴. Then x⁶y⁴ ÷ xy = x^(6-1) y^(4-1) = x⁵y³." },
+
+  // ===== FACTORS & PRODUCTS =====
+  { topic:"Factors & Products", question:"Expand: (2x − 3)(x + 4)", options:["2x² + 5x − 12","2x² − 5x − 12","2x² + 11x − 12","2x² − 11x + 12"], correct:0, explanation:"FOIL: 2x² + 8x − 3x − 12 = 2x² + 5x − 12." },
+  { topic:"Factors & Products", question:"Factor: x² − 16", options:["(x − 4)²","(x + 4)(x − 4)","(x − 8)(x + 2)","Cannot be factored"], correct:1, explanation:"Difference of squares: x² − 4² = (x + 4)(x − 4)." },
+  { topic:"Factors & Products", question:"Factor completely: 3x² + 12x + 9", options:["3(x² + 4x + 3)","3(x + 1)(x + 3)","(3x + 3)(x + 3)","3(x + 3)²"], correct:1, explanation:"GCF of 3: 3(x² + 4x + 3) = 3(x + 1)(x + 3)." },
+  { topic:"Factors & Products", question:"Factor: 2x² + 7x − 15", options:["(2x − 3)(x + 5)","(2x + 3)(x − 5)","(2x − 5)(x + 3)","(2x + 5)(x − 3)"], correct:0, explanation:"ac = -30, b = 7. Use 10 and -3: 2x² + 10x − 3x − 15 = 2x(x+5) − 3(x+5) = (2x − 3)(x + 5)." },
+
+  // ===== RELATIONS & FUNCTIONS =====
+  { topic:"Relations & Functions", question:"Which set of ordered pairs is a function?", options:["{(1,2),(2,3),(1,4)}","{(0,5),(1,5),(2,5)}","{(3,1),(3,2),(3,3)}","{(2,1),(4,2),(2,3)}"], correct:1, explanation:"Each input must map to ONE output. Option B has unique x-values (0,1,2). Multiple x = 1 in option A and multiple x = 3 in option C disqualify them." },
+  { topic:"Relations & Functions", question:"If f(x) = 2x² − 5, what is f(3)?", options:["7","11","13","17"], correct:2, explanation:"f(3) = 2(3)² − 5 = 2(9) − 5 = 18 − 5 = 13." },
+  { topic:"Relations & Functions", question:"A graph shows a closed dot at (-3, 2) and an open dot at (5, 6), connected by a line. What is the range?", options:["[-3, 5)","(-3, 5]","[2, 6)","(2, 6]"], correct:2, explanation:"Range uses y-values. Closed at y=2 (include), open at y=6 (exclude). Range: [2, 6)." },
+
+  // ===== LINEAR FUNCTIONS =====
+  { topic:"Linear Functions", question:"Find the slope of the line passing through (-1, 4) and (3, -8).", options:["-3","-1/3","1/3","3"], correct:0, explanation:"m = (-8 - 4) / (3 - (-1)) = -12/4 = -3." },
+  { topic:"Linear Functions", question:"Convert y = (1/2)x + 3 to general form (Ax + By + C = 0).", options:["x − 2y + 6 = 0","x − 2y − 6 = 0","x + 2y + 6 = 0","2x + y + 6 = 0"], correct:0, explanation:"Multiply by 2: 2y = x + 6 → x − 2y + 6 = 0." },
+  { topic:"Linear Functions", question:"What is the y-intercept of the line 2x − 3y + 12 = 0?", options:["(0, -4)","(0, 4)","(0, -12)","(0, 6)"], correct:1, explanation:"Set x = 0: -3y + 12 = 0, so y = 4. Y-intercept is (0, 4)." },
+  { topic:"Linear Functions (Long)", question:"A taxi charges $4 base fare plus $1.50 per km. How far can you travel for $19?", options:["6 km","8 km","10 km","12 km"], correct:2, explanation:"Cost equation: C = 4 + 1.5d. Solve 19 = 4 + 1.5d → 1.5d = 15 → d = 10 km." },
+
+  // ===== SYSTEMS =====
+  { topic:"Systems of Equations", question:"Solve by substitution: y = 2x + 1 and 3x + y = 11.", options:["x=2, y=5","x=3, y=2","x=1, y=3","x=4, y=9"], correct:0, explanation:"Substitute: 3x + (2x + 1) = 11 → 5x = 10 → x = 2; then y = 2(2) + 1 = 5." },
+  { topic:"Systems of Equations (Long)", question:"Tickets: adult $12, child $8. 50 tickets sold for total $480. How many adult tickets?", options:["15 adult","20 adult","25 adult","30 adult"], correct:1, explanation:"a + c = 50 and 12a + 8c = 480. From first: c = 50 - a. Sub: 12a + 8(50-a) = 480 → 12a + 400 - 8a = 480 → 4a = 80 → a = 20." },
+
+  // ===== FINANCE =====
+  { topic:"Finance", question:"You earn $14.25/hr and work 35 hrs/week. What is your weekly gross income?", options:["$498.75","$499.75","$502.50","$525.00"], correct:0, explanation:"$14.25 × 35 = $498.75." },
+  { topic:"Finance", question:"A real estate agent earns 3% commission on a $425,000 home sale. How much commission?", options:["$1,275","$12,750","$14,167","$127,500"], correct:1, explanation:"$425,000 × 0.03 = $12,750." },
+  { topic:"Finance (Long)", question:"A jacket originally costs $80. It's marked down 25%, then 15% HST is added at checkout. What is the final price?", options:["$60.00","$66.00","$69.00","$72.00"], correct:2, explanation:"After 25% off: $80 × 0.75 = $60. With HST: $60 × 1.15 = $69.00." },
+  { topic:"Finance (Long)", question:"You exchange CAD 500 to USD at 1 CAD = 0.74 USD with a 2% service fee. How much USD do you receive?", options:["$362.60","$370.00","$377.40","$502.40"], correct:0, explanation:"500 × 0.74 = $370 USD before fee. Fee: 370 × 0.02 = $7.40. Net: $370 − $7.40 = $362.60." }
+];
+
+let currentQ = 0;
+let userAnswers = new Array(questions.length).fill(null);
+let answered = new Array(questions.length).fill(false);
+let startTime = null;
+let timerInterval = null;
+
+function startExam() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('exam-info').style.display = 'flex';
+  document.getElementById('progress-container').style.display = 'block';
+  document.getElementById('question-area').style.display = 'block';
+  document.getElementById('controls').style.display = 'flex';
+  startTime = Date.now();
+  timerInterval = setInterval(updateTimer, 1000);
+  showQuestion();
+}
+
+function updateTimer() {
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('timer').textContent = m + ':' + s;
+}
+
+function showQuestion() {
+  const q = questions[currentQ];
+  let optionsHtml = '<div class="options">';
+  q.options.forEach((opt, i) => {
+    const letter = String.fromCharCode(65 + i);
+    let classes = 'option';
+    if (userAnswers[currentQ] === i) classes += ' selected';
+    if (answered[currentQ]) {
+      if (i === q.correct) classes += ' correct';
+      else if (userAnswers[currentQ] === i) classes += ' incorrect';
+    }
+    optionsHtml += '<div class="' + classes + '" onclick="selectOption(' + i + ')"><div class="option-letter">' + letter + '</div><div>' + opt + '</div></div>';
+  });
+  optionsHtml += '</div>';
+
+  let feedbackHtml = '';
+  if (answered[currentQ]) {
+    const correct = userAnswers[currentQ] === q.correct;
+    feedbackHtml = '<div class="feedback ' + (correct ? 'correct' : 'incorrect') + '"><strong>' + (correct ? '✓ Correct!' : '✗ Not quite.') + '</strong>' + q.explanation + '</div>';
+  }
+
+  document.getElementById('question-area').innerHTML =
+    '<span class="section-tag">' + q.topic + '</span>' +
+    '<div style="color:#6c757d;font-size:14px;margin-bottom:8px;">Question ' + (currentQ + 1) + ' of ' + questions.length + '</div>' +
+    '<div class="question-text">' + q.question + '</div>' +
+    optionsHtml + feedbackHtml;
+
+  document.getElementById('prev-btn').disabled = currentQ === 0;
+  document.getElementById('q-counter').textContent = (currentQ + 1) + ' / ' + questions.length;
+  const score = userAnswers.filter((a, i) => answered[i] && a === questions[i].correct).length;
+  const totalAnswered = answered.filter(a => a).length;
+  document.getElementById('score-display').textContent = score + ' / ' + totalAnswered;
+  document.getElementById('progress-fill').style.width = ((currentQ + 1) / questions.length * 100) + '%';
+
+  if (answered[currentQ]) {
+    document.getElementById('check-btn').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'inline-block';
+    document.getElementById('next-btn').textContent = currentQ === questions.length - 1 ? 'Finish Exam ✓' : 'Next →';
+  } else {
+    document.getElementById('check-btn').style.display = 'inline-block';
+    document.getElementById('next-btn').style.display = 'none';
+  }
+}
+
+function selectOption(i) {
+  if (answered[currentQ]) return;
+  userAnswers[currentQ] = i;
+  showQuestion();
+}
+
+function checkAnswer() {
+  if (userAnswers[currentQ] === null) { alert('Please select an answer first!'); return; }
+  answered[currentQ] = true;
+  showQuestion();
+}
+
+function nextQuestion() {
+  if (currentQ === questions.length - 1) { showResults(); return; }
+  currentQ++;
+  showQuestion();
+}
+
+function prevQuestion() { if (currentQ > 0) { currentQ--; showQuestion(); } }
+
+function showResults() {
+  clearInterval(timerInterval);
+  document.getElementById('exam-info').style.display = 'none';
+  document.getElementById('progress-container').style.display = 'none';
+  document.getElementById('question-area').style.display = 'none';
+  document.getElementById('controls').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+
+  const score = userAnswers.filter((a, i) => a === questions[i].correct).length;
+  const pct = Math.round(score / questions.length * 100);
+  document.getElementById('final-percent').textContent = pct + '%';
+
+  let bg, msg;
+  if (pct >= 80) { bg = 'linear-gradient(135deg,#56ab2f,#a8e063)'; msg = 'Excellent work! 🌟 You\'re well prepared.'; }
+  else if (pct >= 65) { bg = 'linear-gradient(135deg,#f7971e,#ffd200)'; msg = 'Solid! 👍 Review the topics you missed.'; }
+  else if (pct >= 50) { bg = 'linear-gradient(135deg,#f2994a,#f2c94c)'; msg = 'Halfway there. Focus on weak topics.'; }
+  else { bg = 'linear-gradient(135deg,#cb2d3e,#ef473a)'; msg = 'Keep practising! Read the explanations carefully.'; }
+  document.getElementById('score-circle').style.background = bg;
+  document.getElementById('result-message').textContent = msg;
+
+  const topics = {};
+  questions.forEach((q, i) => {
+    if (!topics[q.topic]) topics[q.topic] = { correct: 0, total: 0 };
+    topics[q.topic].total++;
+    if (userAnswers[i] === q.correct) topics[q.topic].correct++;
+  });
+  let html = '<h3 style="margin-bottom:15px;color:#2e7d32;">Performance by Topic</h3>';
+  Object.entries(topics).forEach(([t, d]) => {
+    const tp = Math.round(d.correct / d.total * 100);
+    html += '<div class="breakdown-item"><span><strong>' + t + '</strong></span><span>' + d.correct + '/' + d.total + ' (' + tp + '%)</span></div>';
+  });
+  document.getElementById('topic-breakdown').innerHTML = html;
+}
+
+function reviewAnswers() {
+  const section = document.getElementById('review-section');
+  if (section.style.display === 'block') { section.style.display = 'none'; return; }
+  let html = '<h3 style="color:#2e7d32;margin-bottom:15px;">Detailed Review</h3>';
+  questions.forEach((q, i) => {
+    const userAns = userAnswers[i];
+    const correct = userAns === q.correct;
+    const userLetter = userAns !== null ? String.fromCharCode(65 + userAns) : 'No answer';
+    const correctLetter = String.fromCharCode(65 + q.correct);
+    html += '<div class="review-question ' + (correct ? 'correct-q' : 'wrong-q') + '">' +
+      '<div style="font-size:13px;color:#6c757d;margin-bottom:6px;">' + q.topic + ' · Q' + (i+1) + '</div>' +
+      '<div style="font-weight:600;margin-bottom:8px;">' + q.question + '</div>' +
+      '<div>Your answer: <strong>' + userLetter + '</strong>' + (userAns !== null ? ' — ' + q.options[userAns] : '') + '</div>' +
+      (!correct ? '<div style="color:#28a745;">Correct: <strong>' + correctLetter + '</strong> — ' + q.options[q.correct] + '</div>' : '') +
+      '<div style="font-size:14px;color:#495057;margin-top:8px;padding-top:8px;border-top:1px solid #dee2e6;">' + q.explanation + '</div></div>';
+  });
+  section.innerHTML = html;
+  section.style.display = 'block';
+}
+
+function restartExam() {
+  currentQ = 0;
+  userAnswers = new Array(questions.length).fill(null);
+  answered = new Array(questions.length).fill(false);
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('start-screen').style.display = 'block';
+  document.getElementById('review-section').style.display = 'none';
+}
+</script>
+</body>
+</html>
